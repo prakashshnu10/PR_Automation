@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Peer Review Dashboard</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  </head>
+  <body>
+    <div>
+      <h1>Peer Review Dashboard</h1>
+      <form id="analyzeForm" method="POST">
+        <label for="project_key">Project Key:</label>
+        <input type="text" id="project_key" name="project_key" required><br>
+        <label for="sonarqube_url">SonarQube URL:</label>
+        <input type="text" id="sonarqube_url" name="sonarqube_url" required><br>
+        <label for="token">SonarQube Token:</label>
+        <input type="text" id="token" name="token" required><br>
+        <button type="submit">Analyze</button>
+      </form>
+      <div id="results"></div>
+    </div>
+
+    <script>
+      $(document).ready(function(){
+        $('#analyzeForm').on('submit', function(event){
+          event.preventDefault();
+          $.ajax({
+            url: '/analyze',
+            method: 'GET',
+            data: $(this).serialize(),
+            success: function(data) {
+              if (data.error) {
+                $('#results').html('<h2>Error</h2><pre>' + data.error + '</pre>');
+              } else {
+                $('#results').html('<h2>SonarQube Results</h2><pre>' + JSON.stringify(data.sonar_results, null, 2) + '</pre>');
+              }
+            },
+            error: function(xhr, status, error) {
+              console.error(error);
+            }
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
